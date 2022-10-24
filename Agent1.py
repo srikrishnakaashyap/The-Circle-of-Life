@@ -82,6 +82,7 @@ class Agent1:
 
     def agent1(self, graph, path, dist, agentPos, preyPos, predPos, runs=100):
         while runs > 0:
+            print(agentPos,preyPos,predPos,"test")
             if agentPos == predPos:
                 return False, 3
 
@@ -106,7 +107,7 @@ class Agent1:
                 return True, 2
 
             # move predator
-            predPos = Utility.movePredator(predPos, agentPos, path)
+            predPos = Utility.movePredator(agentPos, predPos, path)
 
         runs -= 1
 
@@ -131,4 +132,4 @@ if __name__ == "__main__":
 
     agent1 = Agent1()
 
-    agent1.executeAgent(10)
+    agent1.executeAgent(20)

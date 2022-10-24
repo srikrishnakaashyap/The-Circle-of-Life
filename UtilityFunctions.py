@@ -10,36 +10,44 @@ class Utility:
         # print(dist)
         path = [[i for i in range(size)] for j in range(size)]
 
-        for i in range(len(graph)):
-            dist[i][i] = 0
+        # for i in range(len(graph)):
+        #     dist[i][i] = 0
 
         for i in range(size):
             for j in range(size):
                 if graph[i][j] == 1:
                     dist[i][j] = 1
+                    dist[j][i] = 1
                     path[i][j] = j
                     path[j][i] = i
 
+        print("--------------------dist--------------")
+        Utility.printGrid(dist)
         for k in range(size):
             for i in range(size):
                 for j in range(size):
 
                     if dist[i][j] > dist[i][k] + dist[k][j]:
                         dist[i][j] = dist[i][k] + dist[k][j]
-
+                        dist[j][i] = dist[i][k] + dist[k][j]
                         path[i][j] = k
                         # path[k] = j
                         path[j][i] = k
                         # path[k] = i
-                        path[i][k] = k
-                        path[k][i] = i
-                        path[j][k] = k
-                        path[k][j] = j
+                        # path[i][k] = k
+                        # path[k][i] = i
+                        # path[j][k] = k
+                        # path[k][j] = j
+        print("--------------------dist--------------")
+        Utility.printGrid(dist)
 
+        for i in range(len(graph)):
+            dist[i][i] = 0
         return path, dist
 
     @staticmethod
     def movePredator(agentPos, predPos, path):
+        # print(path[predPos][agentPos],"test path")
         return path[predPos][agentPos]
 
     @staticmethod
@@ -59,3 +67,9 @@ class Utility:
             if graph[preyPos][i] == 1:
                 moves.append(i)
         return random.choice(moves)
+    
+
+    @staticmethod
+    def printGrid(grid):
+        for row in grid:
+            print(row)
