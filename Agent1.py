@@ -107,7 +107,8 @@ class Agent1:
                 return True, 2
 
             # move predator
-            predPos = Utility.movePredator(agentPos, predPos, path)
+            #predPos = Utility.movePredator(agentPos, predPos, path)
+            predPos = Utility.movePredator_dum(predPos, graph,dist)
 
         runs -= 1
 
