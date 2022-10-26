@@ -1,6 +1,9 @@
 import math
 import random
-
+import matplotlib.pyplot as plt
+import networkx as nx
+import random
+import numpy as np
 
 class Utility:
     @staticmethod
@@ -9,17 +12,6 @@ class Utility:
         dist = [[math.inf for i in range(len(graph[0]))] for j in range(len(graph))]
 
         path = [[-1 for i in range(size)] for j in range(size)]
-        # for i in range(size):
-        #     for j in range(i,size):
-        #         #print(i,j,"test")
-        #         if(i<j):
-        #             path[i][j]=(i+1)%size
-        #             # path[j][i]=(j+1)%size
-        #         elif(i>j):
-        #             path[i][j]=(i-1)%size
-        #             # path[j][i]=(j-1)%size
-        #         else:
-        # path[i][j]=i
 
         for i in range(len(graph)):
             dist[i][i] = 0
@@ -29,8 +21,7 @@ class Utility:
                 if graph[i][j] == 1:
                     dist[i][j] = 1
                     dist[j][i] = 1
-                    # path[i][j] = j
-                    # path[j][i] = i
+
 
         # print("--------------------dist--------------")
         # Utility.printGrid(dist)
@@ -44,26 +35,9 @@ class Utility:
                     if dist[i][j] > dist[i][k] + dist[k][j]:
                         dist[i][j] = dist[i][k] + dist[k][j]
                         dist[j][i] = dist[i][k] + dist[k][j]
-                        #     if graph[i][k] == 1:
-                        #         path[i][j] = k
-                        #         # path[k] = j
-                        #         path[j][i] = k
-                        # # else:
-                        #     if(i<j):
-                        #         path[i][j] = i+1
-                        #         path[j][i] = i+1
-                        #     elif(i>j):
-                        #         path[i][j] = i-1
-                        #         path[j][i] = i-1
-                        # path[k] = i
-                        path[i][k] = k
-                        path[k][i] = i
-                        path[j][k] = k
-                        path[k][j] = j
-                        path[i][j] = k
-                        path[j][i] = k
-        print("--------------------dist--------------")
-        Utility.printGrid(dist)
+
+        # print("--------------------dist--------------")
+        # Utility.printGrid(dist)
 
         return path, dist
 
@@ -118,3 +92,38 @@ class Utility:
             for col in range(len(grid[0])):
                 print(grid[row][col], end=", ")
             print()
+
+    @staticmethod
+    def visualizeGrid(graph,agentPos,predPos,preyPos):
+        ngraph=np.array(graph)
+        rows, cols = np.where(ngraph == 1)
+        edges = zip(rows.tolist(), cols.tolist())
+        G=nx.cycle_graph(50)
+        G.add_edges_from(edges) 
+        color_map = []
+        for node in G:
+            if node == agentPos:
+                color_map.append('blue')
+            elif node == predPos: 
+                color_map.append('red')
+            elif node == preyPos: 
+                color_map.append('yellow')
+            else:
+                color_map.append('grey')
+        pos=nx.circular_layout(G)
+        ax=plt.gca()
+        ax1=plt.gcf()
+        ax1.set_size_inches(17,17)
+        for edge in G.edges():
+            source, target = edge
+            rad = 0.8
+            arrowprops=dict(lw=1,arrowstyle="-",color='black',connectionstyle=f"arc3,rad={rad}",linestyle= '-',alpha=0.6,)
+            ax.annotate("",xy=pos[source],
+                        xytext=pos[target],
+                        arrowprops=arrowprops
+                    )
+        nx.draw(G, pos, font_size=15,node_size=1000, node_color=color_map,with_labels=True,font_family="sans-serif", width=0)
+        # plt.figure(figsize=(10,10))
+        plt.show()
+        # plt.pause(9)
+

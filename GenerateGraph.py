@@ -42,14 +42,14 @@ class GenerateGraph:
         # print(graph,"before")
         self.addRandomEdges(graph, size, degree)
 
-        print("--------------graph------------")
+        # print("--------------graph------------")
 
-        Utility.printGrid(graph)
+        # Utility.printGrid(graph)
         # print(graph,"after")
         # print(degree,"degree")
         path, distance = Utility.floydWarshal(graph, size)
-        print("--------------------path--------------")
-        Utility.printGrid(path)
+        # print("--------------------path--------------")
+        # Utility.printGrid(path)
 
         # print("PATH", path)
 
