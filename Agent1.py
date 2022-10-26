@@ -2,6 +2,7 @@ from GenerateGraph import GenerateGraph
 
 import random
 from UtilityFunctions import Utility
+import time
 
 
 class Agent1:
@@ -80,59 +81,83 @@ class Agent1:
 
         return agentPos
 
-    def agent1(self, graph, path, dist, agentPos, preyPos, predPos, runs=100):
+    def agent1(self, graph, path, dist, agentPos, preyPos, predPos, runs=100, visualize=False):
 
         while runs > 0:
 
-            print(agentPos, preyPos, predPos)
+            print(agentPos, predPos, preyPos)
+
+            if visualize:
+                # wait for a second
+                Utility.visualizeGrid(graph,agentPos,predPos,preyPos)
+                # time.sleep(10)
+
+
+
+            # print(agentPos, preyPos, predPos)
             if agentPos == predPos:
-                return False, 3
+                return False, 3, 100-runs, agentPos, predPos, preyPos
 
             if agentPos == preyPos:
-                return True, 0
+                return True, 0, 100-runs, agentPos, predPos, preyPos
 
             # move agent
             agentPos = self.moveAgent(agentPos, preyPos, predPos, graph, dist)
 
             # check pred
             if agentPos == predPos:
-                return False, 4
+                return False, 4, 100-runs, agentPos, predPos, preyPos
 
             # check prey
             if agentPos == preyPos:
-                return True, 1
+                return True, 1, 100-runs, agentPos, predPos, preyPos
 
             # move prey
             preyPos = Utility.movePrey(preyPos, graph)
 
             if agentPos == preyPos:
-                return True, 2
+                return True, 2, 100-runs, agentPos, predPos, preyPos
 
             # move predator
             # predPos = Utility.movePredator(agentPos, predPos, path)
             predPos = Utility.movePredatorWithoutPath(agentPos, predPos, graph, dist)
 
-        runs -= 1
+            runs -= 1
 
-        return False, 5
+        return False, 5, 100, agentPos, predPos, preyPos
 
     def executeAgent(self, size):
 
         graph, path, dist = self.generateGraph.generateGraph(size)
 
-        agentPos = random.randint(0, size - 1)
-        preyPos = random.randint(0, size - 1)
-        predPos = random.randint(0, size - 1)
+        counter = 0
+        
+        stepsCount = 0
+        for _ in range(1):
 
-        result, line = self.agent1(graph, path, dist, agentPos, preyPos, predPos)
+            agentPos = random.randint(0, size - 1)
+            preyPos = random.randint(0, size - 1)
+            predPos = random.randint(0, size - 1)
+
+            result, line, steps, agentPos, predPos, preyPos = self.agent1(graph, path, dist, agentPos, preyPos, predPos,100,True)
+
+            print(result, agentPos, predPos, preyPos)
+            counter += result
+            stepsCount += steps
         # print(self.agent1(graph, path, dist, agentPos, preyPos, predPos))
-        print(result, line)
+        # print(result, line)
 
-        return result
+        return counter, stepsCount/100
 
 
 if __name__ == "__main__":
 
     agent1 = Agent1()
+    counter=0
+    stepsArray = []
+    for _ in range(1):
 
-    agent1.executeAgent(20)
+        result, steps = agent1.executeAgent(50)
+        counter+=result
+        stepsArray.append(steps)
+    # print(counter/30, stepsArray)
