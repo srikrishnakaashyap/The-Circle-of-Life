@@ -55,15 +55,7 @@ class Agent2:
         if len(options) > 0:
             return random.choice(options)
 
-        for i in range(len(neighboursPredatorDistance)):
-            if (
-                neighboursPreyDistance[i] == currPreyDist
-                and neighboursPredatorDistance[i] == currPredDist
-            ):
-                options.append(agentNeighbours[i])
-
-        if len(options) > 0:
-            return random.choice(options)
+###############################################################
 
         for i in range(len(neighboursPredatorDistance)):
             if neighboursPredatorDistance[i] > currPredDist:
@@ -71,6 +63,17 @@ class Agent2:
 
         if len(options) > 0:
             return random.choice(options)
+################################################################
+        # for i in range(len(neighboursPredatorDistance)):
+        #     if (
+        #         neighboursPreyDistance[i] == currPreyDist
+        #         and neighboursPredatorDistance[i] == currPredDist
+        #     ):
+        #         options.append(agentNeighbours[i])
+        #
+        # if len(options) > 0:
+        #     return random.choice(options)
+################################################################
 
         for i in range(len(neighboursPredatorDistance)):
             if neighboursPredatorDistance[i] == currPredDist:
@@ -133,13 +136,13 @@ class Agent2:
         counter = 0
         
         stepsCount = 0
-        for _ in range(1):
+        for _ in range(100):
 
             agentPos = random.randint(0, size - 1)
             preyPos = random.randint(0, size - 1)
             predPos = random.randint(0, size - 1)
 
-            result, line, steps, agentPos, predPos, preyPos = self.agent2(graph, path, dist, agentPos, preyPos, predPos,100,True)
+            result, line, steps, agentPos, predPos, preyPos = self.agent2(graph, path, dist, agentPos, preyPos, predPos,100,False)
 
             print(result, agentPos, predPos, preyPos)
             counter += result
@@ -155,9 +158,9 @@ if __name__ == "__main__":
     agent2 = Agent2()
     counter=0
     stepsArray = []
-    for _ in range(1):
+    for _ in range(30):
 
         result, steps = agent2.executeAgent(50)
         counter+=result
         stepsArray.append(steps)
-    # print(counter/30, stepsArray)
+    print(counter/30, stepsArray)
