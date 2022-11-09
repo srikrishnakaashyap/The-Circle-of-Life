@@ -18,7 +18,7 @@ class GenerateGraph:
                         and i != (j - 1) % size
                         and degree[j % size] == 2
                     ):
-                        deg2List.append(j % size)    
+                        deg2List.append(j % size)
 
                 deg2List = list(set(deg2List))
                 # print(i,deg2List,"test_deg")
@@ -35,7 +35,7 @@ class GenerateGraph:
 
         degree = [2 for i in range(size)]
         graph = [[0 for i in range(size)] for j in range(size)]
-        
+
         for i in range(size):
             graph[i % size][(i + 1) % size] = 1
             graph[(i + 1) % size][i % size] = 1
@@ -53,4 +53,4 @@ class GenerateGraph:
 
         # print("PATH", path)
 
-        return graph, path, distance
+        return graph, path, distance, degree
