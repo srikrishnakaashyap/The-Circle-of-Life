@@ -3,19 +3,149 @@ from GenerateGraph import GenerateGraph
 import random
 from UtilityFunctions import Utility
 import time
+from copy import copy
 
 
 class Agent3:
     def __init__(self):
         self.generateGraph = GenerateGraph()
 
-    def updateBeliefArray(self, agentPos, preyPos, predPos, graph, dist):
-        pass
+    def findNodeToScout(self):
+        options = []
+        maxiValue = max(self.beliefArray)
+
+        for i, j in enumerate(self.beliefArray):
+            if j == maxiValue:
+                options.append(i)
+
+        if len(options) > 0:
+            return random.choice(options)
+
+    def dfs(self, currNode, visited, graph, degree):
+
+        neighbours = Utility.getNeighbours(graph, currNode)
+
+        for j in neighbours:
+            self.beliefArray[currNode] += self.beliefArray[j] * (1 / (degree[j] + 1))
+            if j not in visited:
+                visited.add(j)
+                self.dfs(j, visited, graph, degree)
+
+    def updateBeliefArray(self, agentPos, preyPos, predPos, graph, dist, degree):
+
+        newBeliefArray = copy(self.beliefArray)
+        scoutNode = self.findNodeToScout()
+
+        if self.scoutForPrey(scoutNode, preyPos):
+            newBeliefArray = [0] * len(dist)
+            newBeliefArray[scoutNode] = 1
+            self.beliefArray = copy(newBeliefArray)
+        else:
+
+            neighbours = Utility.getNeighbours(graph, scoutNode)
+
+            for j in neighbours:
+                self.beliefArray[j] -= (1 / (degree[scoutNode] + 1)) * self.beliefArray[
+                    scoutNode
+                ]
+
+            self.beliefArray[scoutNode] = 0
+
+            visited = set()
+
+            visited.add(scoutNode)
+
+            self.dfs(scoutNode, visited, graph, degree)
+
+            self.beliefArray = copy(newBeliefArray)
+
+            print("sum of belief array:", sum(self.beliefArray))  # print sum
+
+    def predictPreyPos(self):
+        options = []
+        maxiValue = max(self.beliefArray)
+
+        for i, j in enumerate(self.beliefArray):
+            if j == maxiValue:
+                options.append(i)
+
+        if len(options) > 0:
+            return random.choice(options)
 
     def scoutForPrey(self, node, preyPos):
         return node == preyPos
 
-    def moveAgent(self, agentPos, preyPos, predPos, graph, dist, degree):
+    def moveAgent(
+        self, agentPos, predictedPreyPos, preyPos, predPos, graph, dist, degree
+    ):
+
+        agentNeighbours = Utility.getNeighbours(graph, agentPos)
+
+        neighboursPreyDistance = []
+        neighboursPredatorDistance = []
+
+        currPreyDist = dist[agentPos][predictedPreyPos]
+        currPredDist = dist[agentPos][predPos]
+
+        for index, elem in enumerate(agentNeighbours):
+            neighboursPreyDistance.append(dist[elem][predictedPreyPos])
+            neighboursPredatorDistance.append(dist[elem][predPos])
+
+        options = []
+        for i in range(len(neighboursPredatorDistance)):
+            if (
+                neighboursPreyDistance[i] < currPreyDist
+                and neighboursPredatorDistance[i] > currPredDist
+            ):
+                options.append(agentNeighbours[i])
+
+        # Break ties by choosing optimal choice for agent 2
+        if len(options) > 0:
+            return random.choice(options)
+
+        for i in range(len(neighboursPredatorDistance)):
+            if (
+                neighboursPreyDistance[i] < currPreyDist
+                and neighboursPredatorDistance[i] == currPredDist
+            ):
+                options.append(agentNeighbours[i])
+
+        if len(options) > 0:
+            return random.choice(options)
+
+        for i in range(len(neighboursPredatorDistance)):
+            if (
+                neighboursPreyDistance[i] == currPreyDist
+                and neighboursPredatorDistance[i] > currPredDist
+            ):
+                options.append(agentNeighbours[i])
+
+        if len(options) > 0:
+            return random.choice(options)
+
+        for i in range(len(neighboursPredatorDistance)):
+            if (
+                neighboursPreyDistance[i] == currPreyDist
+                and neighboursPredatorDistance[i] == currPredDist
+            ):
+                options.append(agentNeighbours[i])
+
+        if len(options) > 0:
+            return random.choice(options)
+
+        for i in range(len(neighboursPredatorDistance)):
+            if neighboursPredatorDistance[i] > currPredDist:
+                options.append(agentNeighbours[i])
+
+        if len(options) > 0:
+            return random.choice(options)
+
+        for i in range(len(neighboursPredatorDistance)):
+            if neighboursPredatorDistance[i] == currPredDist:
+                options.append(agentNeighbours[i])
+
+        if len(options) > 0:
+            return random.choice(options)
 
         return agentPos
 
@@ -48,8 +178,16 @@ class Agent3:
             if agentPos == preyPos:
                 return True, 0, 100 - runs, agentPos, predPos, preyPos
 
+            nodeToScout = self.findNodeToScout()
+
+            self.updateBeliefArray(agentPos, preyPos, predPos, graph, dist, degree)
+
+            predictedPreyPosition = self.predictPreyPos()
+
             # move agent
-            agentPos = self.moveAgent(agentPos, preyPos, predPos, graph, dist, degree)
+            agentPos = self.moveAgent(
+                agentPos, predictedPreyPosition, preyPos, predPos, graph, dist, degree
+            )
 
             # check pred
             if agentPos == predPos:
@@ -86,14 +224,9 @@ class Agent3:
             preyPos = random.randint(0, size - 1)
             predPos = random.randint(0, size - 1)
 
-            if agentPos == predPos:
-                continue
+            self.beliefArray = [1 / (size) for i in range(size)]
 
-            if agentPos == preyPos:
-                counter += 1
-                continue
-
-            self.belief_array = [1 / (size - 1) for i in range(size)]
+            self.beliefArray[agentPos] = 0
 
             result, line, steps, agentPos, predPos, preyPos = self.agent3(
                 graph, path, dist, agentPos, preyPos, predPos, degree, 100, False
