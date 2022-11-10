@@ -21,15 +21,15 @@ class Agent3:
         if len(options) > 0:
             return random.choice(options)
 
-    def dfs(self, currNode, visited, graph, degree):
+    def dfs(self, currNode, visited, graph, degree, newBeliefArray):
 
         neighbours = Utility.getNeighbours(graph, currNode)
 
         for j in neighbours:
-            self.beliefArray[currNode] += self.beliefArray[j] * (1 / (degree[j] + 1))
+            self.beliefArray[currNode] += newBeliefArray[j] * (1 / (degree[j] + 1))
             if j not in visited:
                 visited.add(j)
-                self.dfs(j, visited, graph, degree)
+                self.dfs(j, visited, graph, degree, newBeliefArray)
 
     def updateBeliefArray(self, agentPos, preyPos, predPos, graph, dist, degree):
 
@@ -42,24 +42,15 @@ class Agent3:
             self.beliefArray = copy(newBeliefArray)
         else:
 
-            neighbours = Utility.getNeighbours(graph, scoutNode)
+            totalProbability = 1 - self.beliefArray[scoutNode]
 
-            for j in neighbours:
-                self.beliefArray[j] -= (1 / (degree[scoutNode] + 1)) * self.beliefArray[
-                    scoutNode
-                ]
+            # print(totalProbability, self.beliefArray)
 
-            self.beliefArray[scoutNode] = 0
-
-            visited = set()
-
-            visited.add(scoutNode)
-
-            self.dfs(scoutNode, visited, graph, degree)
-
-            self.beliefArray = copy(newBeliefArray)
-
-            print("sum of belief array:", sum(self.beliefArray))  # print sum
+            for i in range(len(self.beliefArray)):
+                if i == scoutNode:
+                    self.beliefArray[i] = 0
+                else:
+                    self.beliefArray[i] = self.beliefArray[i] / totalProbability
 
     def predictPreyPos(self):
         options = []
@@ -164,7 +155,7 @@ class Agent3:
 
         while runs > 0:
 
-            print(agentPos, predPos, preyPos)
+            print(agentPos, predPos, preyPos, sum(self.beliefArray))
 
             if visualize:
                 # wait for a second
@@ -178,11 +169,15 @@ class Agent3:
             if agentPos == preyPos:
                 return True, 0, 100 - runs, agentPos, predPos, preyPos
 
-            nodeToScout = self.findNodeToScout()
+            if 1 in self.beliefArray:
+                for i, j in enumerate(self.beliefArray):
+                    if j == 1:
+                        predictedPreyPosition = i
+            else:
 
-            self.updateBeliefArray(agentPos, preyPos, predPos, graph, dist, degree)
+                self.updateBeliefArray(agentPos, preyPos, predPos, graph, dist, degree)
 
-            predictedPreyPosition = self.predictPreyPos()
+                predictedPreyPosition = self.predictPreyPos()
 
             # move agent
             agentPos = self.moveAgent(
@@ -226,7 +221,9 @@ class Agent3:
 
             self.beliefArray = [1 / (size) for i in range(size)]
 
-            self.beliefArray[agentPos] = 0
+            print("INITIAL BELIEF ARRAY SUM ", sum(self.beliefArray))
+
+            # self.beliefArray[agentPos] = 0
 
             result, line, steps, agentPos, predPos, preyPos = self.agent3(
                 graph, path, dist, agentPos, preyPos, predPos, degree, 100, False
