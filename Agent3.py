@@ -42,16 +42,30 @@ class Agent3:
             self.beliefArray = copy(newBeliefArray)
         else:
 
-            totalProbability = 1 - self.beliefArray[scoutNode]
+            totalProbability = 1 - (self.beliefArray[scoutNode]+self.beliefArray[agentPos])
 
             # print(totalProbability, self.beliefArray)
-
+            testbeliefArray=[0]*50
             for i in range(len(self.beliefArray)):
-                if i == scoutNode:
-                    self.beliefArray[i] = 0
+                if i == scoutNode or i == agentPos:
+                    testbeliefArray[i] = 0
                 else:
-                    self.beliefArray[i] = self.beliefArray[i] / totalProbability
-
+                    testbeliefArray[i] = self.beliefArray[i]+((1/(len(self.beliefArray)-2))*(self.beliefArray[scoutNode]+self.beliefArray[agentPos]))  #/ totalProbability
+            # print(sum(testbeliefArray), "test")
+            # Addition Step
+            newBeliefArray=[0]*len(self.beliefArray)
+            for i in range(len(self.beliefArray)):
+                neighbours = Utility.getNeighbours(graph, i)
+                neighbours.append(i)
+                # print(i,neighbours,"check neighbours")
+                for n in neighbours:
+                    # print(1/(degree[n]+1),"degree")
+                    newBeliefArray[n]+=testbeliefArray[i]*(1/(degree[i]+1))
+            # print(sum(newBeliefArray),"test new belief")
+            self.beliefArray = copy(newBeliefArray)
+            # every val / tot
+            # for i in range(len(self.beliefArray)):
+            #     self.beliefArray[i] = self.beliefArray[i] / totalProbability
     def predictPreyPos(self):
         options = []
         maxiValue = max(self.beliefArray)
@@ -156,7 +170,7 @@ class Agent3:
         while runs > 0:
 
             print(agentPos, predPos, preyPos, sum(self.beliefArray))
-
+            # print(self.beliefArray,"beliefarray")
             if visualize:
                 # wait for a second
                 Utility.visualizeGrid(graph, agentPos, predPos, preyPos)
@@ -213,7 +227,7 @@ class Agent3:
         counter = 0
 
         stepsCount = 0
-        for _ in range(1):
+        for _ in range(100):
 
             agentPos = random.randint(0, size - 1)
             preyPos = random.randint(0, size - 1)
@@ -243,9 +257,9 @@ if __name__ == "__main__":
     agent3 = Agent3()
     counter = 0
     stepsArray = []
-    for _ in range(1):
+    for _ in range(30):
 
         result, steps = agent3.executeAgent(50)
         counter += result
         stepsArray.append(steps)
-    # print(counter/30, stepsArray)
+    print(counter/30, stepsArray)
