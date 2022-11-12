@@ -320,7 +320,7 @@ class Agent3:
 
             # move agent
 
-            self.updateBeliefArray3(agentPos, preyPos, predPos, graph, dist, degree)
+            # self.updateBeliefArray3(agentPos, preyPos, predPos, graph, dist, degree)
             # if 1 in self.beliefArray:
             #     for i, j in enumerate(self.beliefArray):
             #         if j == 1:
