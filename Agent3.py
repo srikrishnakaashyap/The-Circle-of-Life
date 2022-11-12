@@ -94,9 +94,7 @@ class Agent3:
             neighbours = Utility.getNeighbours(graph, scoutNode)
 
             for n in neighbours:
-                nextTimeStepBeliefArray[n] += (
-                    self.beliefArray[scoutNode] / degree[scoutNode]
-                )
+                self.beliefArray[n] += self.beliefArray[scoutNode] / degree[scoutNode]
 
             for i in range(len(nextTimeStepBeliefArray)):
 
@@ -268,28 +266,10 @@ class Agent3:
             if agentPos == preyPos:
                 return True, 0, 100 - runs, agentPos, predPos, preyPos
 
-            # if 1 in self.beliefArray:
-            #     for i, j in enumerate(self.beliefArray):
-            #         if j == 1:
-            #             predictedPreyPosition = i
-            # else:
-
             self.updateBeliefArray3(agentPos, preyPos, predPos, graph, dist, degree)
 
             predictedPreyPosition = self.predictPreyPos()
 
-            # if 1 in self.beliefArray or ctr:
-
-            #     print(
-            #         agentPos,
-            #         predPos,
-            #         preyPos,
-            #         predictedPreyPosition,
-            #         sum(self.beliefArray),
-            #     )
-            #     print("--------------------------------")
-            #     print(self.beliefArray)
-            #     print("----------------------------------")
             # move agent
             agentPos = self.moveAgent(
                 agentPos,
@@ -300,12 +280,6 @@ class Agent3:
                 dist,
                 degree,
             )
-
-            # if ctr:
-            #     break
-
-            # if 1 in self.beliefArray:
-            #     ctr = True
 
             # check pred
             if agentPos == predPos:
