@@ -1,5 +1,4 @@
 from GenerateGraph import GenerateGraph
-
 import random
 from UtilityFunctions import Utility
 import time
