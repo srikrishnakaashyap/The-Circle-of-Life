@@ -74,9 +74,24 @@ class Agent3:
 
         self.beliefArray = copy(nextTimeStepBeliefArray)
 
+    def perculateBeliefArray(self, graph, degree):
+        nextTimeStepBeliefArray = [0 for i in range(len(self.beliefArray))]
+
+        for i in range(len(nextTimeStepBeliefArray)):
+
+            neighbours = Utility.getNeighbours(graph, i)
+            neighbours.append(i)
+
+            for n in neighbours:
+                nextTimeStepBeliefArray[n] += self.beliefArray[i] / (degree[i] + 1)
+
+            nextTimeStepBeliefArray[i] += self.beliefArray[i] / (degree[i] + 1)
+
+        self.beliefArray = copy(nextTimeStepBeliefArray)
+
     def updateBeliefArray3(self, agentPos, preyPos, predPos, graph, dist, degree):
 
-        nextTimeStepBeliefArray = [0 for i in range(len(self.beliefArray))]
+        # nextTimeStepBeliefArray = [0 for i in range(len(self.beliefArray))]
 
         neighbours = Utility.getNeighbours(graph, agentPos)
 
@@ -88,7 +103,8 @@ class Agent3:
         scoutNode = self.findNodeToScout()
 
         if scoutNode == preyPos:
-            nextTimeStepBeliefArray[scoutNode] = 1
+            self.beliefArray = [0] * len(self.beliefArray)
+            self.beliefArray[scoutNode] = 1
         else:
 
             neighbours = Utility.getNeighbours(graph, scoutNode)
@@ -96,19 +112,7 @@ class Agent3:
             for n in neighbours:
                 self.beliefArray[n] += self.beliefArray[scoutNode] / degree[scoutNode]
 
-            for i in range(len(nextTimeStepBeliefArray)):
-
-                if i != scoutNode and i != agentPos:
-
-                    neighbours = Utility.getNeighbours(graph, i)
-                    neighbours.append(i)
-
-                    for n in neighbours:
-                        nextTimeStepBeliefArray[n] += self.beliefArray[i] / (
-                            degree[i] + 1
-                        )
-
-        self.beliefArray = copy(nextTimeStepBeliefArray)
+            self.beliefArray[scoutNode] = 0
 
     def updateBeliefArray(self, agentPos, preyPos, predPos, graph, dist, degree):
 
@@ -259,7 +263,7 @@ class Agent3:
                 Utility.visualizeGrid(graph, agentPos, predPos, preyPos)
                 # time.sleep(10)
 
-            # print(agentPos, preyPos, predPos)
+            print(agentPos, preyPos, predPos, sum(self.beliefArray))
             if agentPos == predPos:
                 return False, 3, 100 - runs, agentPos, predPos, preyPos
 
@@ -300,6 +304,8 @@ class Agent3:
             predPos = Utility.movePredatorWithoutPath(agentPos, predPos, graph, dist)
 
             runs -= 1
+
+            # self.perculateBeliefArray(graph, degree)
 
         return False, 5, 100, agentPos, predPos, preyPos
 
