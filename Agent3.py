@@ -321,6 +321,13 @@ class Agent3:
             # move agent
 
             self.updateBeliefArray3(agentPos, preyPos, predPos, graph, dist, degree)
+            # if 1 in self.beliefArray:
+            #     for i, j in enumerate(self.beliefArray):
+            #         if j == 1:
+            #             predictedPreyPosition = i
+            # else:
+
+            self.updateBeliefArray4(agentPos, preyPos, predPos, graph, dist, degree)
 
             predictedPreyPosition = self.predictPreyPos()
 
