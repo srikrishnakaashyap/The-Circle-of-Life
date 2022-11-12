@@ -56,7 +56,7 @@ class Agent3:
                 for j in iNeighbours:
                     piNext += self.beliefArray[j] / (degree[j] + 1)
 
-                nextProb = 0
+                # nextProb = 0
 
                 mulFactor = 1
                 if i in scoutNodeNeighbours:
@@ -71,6 +71,37 @@ class Agent3:
                 nextProb = piNext * mulFactor
 
                 nextTimeStepBeliefArray[i] = nextProb
+
+        self.beliefArray = copy(nextTimeStepBeliefArray)
+
+    def updateBeliefArray3(self, agentPos, preyPos, predPos, graph, dist, degree):
+
+        nextTimeStepBeliefArray = [0 for i in range(len(self.beliefArray))]
+
+        scoutNode = self.findNodeToScout()
+
+        if scoutNode == preyPos:
+            nextTimeStepBeliefArray[scoutNode] = 1
+        else:
+
+            neighbours = Utility.getNeighbours(graph, scoutNode)
+
+            for n in neighbours:
+                nextTimeStepBeliefArray[n] += (
+                    self.beliefArray[scoutNode] / degree[scoutNode]
+                )
+
+            for i in range(len(nextTimeStepBeliefArray)):
+
+                if i != scoutNode:
+
+                    neighbours = Utility.getNeighbours(graph, i)
+                    neighbours.append(i)
+
+                    for n in neighbours:
+                        nextTimeStepBeliefArray[n] += self.beliefArray[i] / (
+                            degree[i] + 1
+                        )
 
         self.beliefArray = copy(nextTimeStepBeliefArray)
 
@@ -218,11 +249,6 @@ class Agent3:
 
         while runs > 0:
 
-            print(agentPos, predPos, preyPos, sum(self.beliefArray))
-            print("--------------------------------")
-            print(self.beliefArray)
-            print("----------------------------------")
-            # print(self.beliefArray,"beliefarray")
             if visualize:
                 # wait for a second
                 Utility.visualizeGrid(graph, agentPos, predPos, preyPos)
@@ -241,14 +267,38 @@ class Agent3:
             #             predictedPreyPosition = i
             # else:
 
-            self.updateBeliefArray2(agentPos, preyPos, predPos, graph, dist, degree)
+            self.updateBeliefArray3(agentPos, preyPos, predPos, graph, dist, degree)
 
             predictedPreyPosition = self.predictPreyPos()
 
-            # move agent
-            agentPos = self.moveAgent(
-                agentPos, predictedPreyPosition, preyPos, predPos, graph, dist, degree
-            )
+            # if 1 in self.beliefArray or ctr:
+
+            #     print(
+            #         agentPos,
+            #         predPos,
+            #         preyPos,
+            #         predictedPreyPosition,
+            #         sum(self.beliefArray),
+            #     )
+            #     print("--------------------------------")
+            #     print(self.beliefArray)
+            #     print("----------------------------------")
+            #     # move agent
+            #     agentPos = self.moveAgent(
+            #         agentPos,
+            #         predictedPreyPosition,
+            #         preyPos,
+            #         predPos,
+            #         graph,
+            #         dist,
+            #         degree,
+            #     )
+
+            # if ctr:
+            #     break
+
+            # if 1 in self.beliefArray:
+            #     ctr = True
 
             # check pred
             if agentPos == predPos:
@@ -279,7 +329,7 @@ class Agent3:
         counter = 0
 
         stepsCount = 0
-        for _ in range(1):
+        for _ in range(100):
 
             agentPos = random.randint(0, size - 1)
             preyPos = random.randint(0, size - 1)
@@ -287,7 +337,7 @@ class Agent3:
 
             self.beliefArray = [1 / (size) for i in range(size)]
 
-            print("INITIAL BELIEF ARRAY SUM ", sum(self.beliefArray))
+            # print("INITIAL BELIEF ARRAY SUM ", sum(self.beliefArray))
 
             # self.beliefArray[agentPos] = 0
 
@@ -309,9 +359,9 @@ if __name__ == "__main__":
     agent3 = Agent3()
     counter = 0
     stepsArray = []
-    for _ in range(1):
+    for _ in range(30):
 
         result, steps = agent3.executeAgent(50)
         counter += result
         stepsArray.append(steps)
-    print(counter / 30, stepsArray)
+    print("SUCCESS RATE", counter / 30, stepsArray)
