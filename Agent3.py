@@ -80,7 +80,7 @@ class Agent3:
         for i in range(len(nextTimeStepBeliefArray)):
 
             neighbours = Utility.getNeighbours(graph, i)
-            neighbours.append(i)
+            # neighbours.append(i)
 
             for n in neighbours:
                 nextTimeStepBeliefArray[n] += self.beliefArray[i] / (degree[i] + 1)
@@ -93,10 +93,13 @@ class Agent3:
 
         # nextTimeStepBeliefArray = [0 for i in range(len(self.beliefArray))]
 
-        neighbours = Utility.getNeighbours(graph, agentPos)
+        # neighbours = Utility.getNeighbours(graph, agentPos)
 
-        for n in neighbours:
-            self.beliefArray[n] += self.beliefArray[agentPos] / degree[agentPos]
+        for n in range(len(self.beliefArray)):
+            if n != agentPos:
+                self.beliefArray[n] += self.beliefArray[agentPos] / len(
+                    self.beliefArray
+                )
 
         self.beliefArray[agentPos] = 0
 
@@ -305,7 +308,7 @@ class Agent3:
 
             runs -= 1
 
-            # self.perculateBeliefArray(graph, degree)
+            self.perculateBeliefArray(graph, degree)
 
         return False, 5, 100, agentPos, predPos, preyPos
 
