@@ -21,7 +21,7 @@ class Agent3:
         if len(options) > 0:
             return random.choice(options)
 
-    def updateBeliefArray4(self, agentPos, preyPos, predPos, graph, dist, degree):
+    def updateBeliefArray(self, agentPos, preyPos, predPos, graph, dist, degree):
 
         nextTimeStepBeliefArray = [0 for i in range(len(self.beliefArray))]
 
@@ -38,7 +38,7 @@ class Agent3:
             # print("sum before distributing: ", sum(nextTimeStepBeliefArray))
         self.beliefArray = copy(nextTimeStepBeliefArray)
 
-    def NormalizeBeliefArray4(self, agentPos, preyPos, predPos, graph, dist, degree):
+    def NormalizeBeliefArray(self, agentPos, preyPos, predPos, graph, dist, degree):
         nextTimeStepBeliefArray2 = [0 for i in range(len(self.beliefArray))]
         for i in range(len(self.beliefArray)):
             neighbours = Utility.getNeighbours(graph, i)
@@ -48,24 +48,8 @@ class Agent3:
 
         # print("sum after distributing: ", sum(nextTimeStepBeliefArray2))
         self.beliefArray = copy(nextTimeStepBeliefArray2)
-        self.updateBeliefArray4(agentPos, preyPos, predPos, graph, dist, degree)
+        self.updateBeliefArray(agentPos, preyPos, predPos, graph, dist, degree)
         # print("sum after distributing: ", sum(nextTimeStepBeliefArray2))
-
-    def perculateBeliefArray(self, graph, degree):
-        nextTimeStepBeliefArray = [0 for i in range(len(self.beliefArray))]
-
-        for i in range(len(nextTimeStepBeliefArray)):
-
-            neighbours = Utility.getNeighbours(graph, i)
-            # neighbours.append(i)
-
-            for n in neighbours:
-                nextTimeStepBeliefArray[n] += self.beliefArray[i] / (degree[i] + 1)
-
-            nextTimeStepBeliefArray[i] += self.beliefArray[i] / (degree[i] + 1)
-
-        self.beliefArray = copy(nextTimeStepBeliefArray)
-
 
     def predictPreyPos(self):
         options = []
@@ -167,7 +151,7 @@ class Agent3:
             runs=100,
             visualize=False,
     ):
-        self.updateBeliefArray4(agentPos, preyPos, predPos, graph, dist, degree)
+        self.updateBeliefArray(agentPos, preyPos, predPos, graph, dist, degree)
         # print(self.beliefArray,"test init")
         while runs > 0:
 
@@ -183,7 +167,7 @@ class Agent3:
             if agentPos == preyPos:
                 return True, 0, 100 - runs, agentPos, predPos, preyPos
             scoutnode=self.findNodeToScout()
-            self.updateBeliefArray4(scoutnode, preyPos, predPos, graph, dist, degree)
+            self.updateBeliefArray(scoutnode, preyPos, predPos, graph, dist, degree)
             # print(self.beliefArray,"after scout")
             predictedPreyPosition = self.predictPreyPos()
 
@@ -196,7 +180,7 @@ class Agent3:
                 dist,
                 degree,
             )
-            self.NormalizeBeliefArray4(agentPos, preyPos, predPos, graph, dist, degree)
+            self.NormalizeBeliefArray(agentPos, preyPos, predPos, graph, dist, degree)
             print(agentPos, preyPos, predPos, predictedPreyPosition, sum(self.beliefArray))
             # print(self.beliefArray, "after normalize")
 
@@ -229,6 +213,7 @@ class Agent3:
 
         stepsCount = 0
         for _ in range(100):
+
             agentPos = random.randint(0, size - 1)
             preyPos = random.randint(0, size - 1)
             predPos = random.randint(0, size - 1)
