@@ -109,7 +109,7 @@ class Agent7:
                 return True, 0, 100 - runs, agentPos, predPos, preyPos
             # print(self.beliefArrayPred,"input belief of predator")
             # print(self.beliefArrayPrey, "input belief of prey")
-            if (self.beliefArrayPred.count(0)==49):
+            if (self.beliefArrayPred.count(0)!=49):
                 scoutnode=self.findNodeToScoutPred(agentPos,dist)
                 # print("test1")
             else:
@@ -183,8 +183,9 @@ class Agent7:
         nextTimeStepBeliefArrayPrey = [0 for i in range(len(self.beliefArrayPrey))]
 
         scoutNode = agentPos
+        scoutCondition=self.scoutForPrey(scoutNode,preyPos)
 
-        if scoutNode == preyPos:
+        if scoutCondition:
             nextTimeStepBeliefArrayPrey[scoutNode] = 1
         else:
             nextTimeStepBeliefArrayPrey[scoutNode] = 0
@@ -201,7 +202,9 @@ class Agent7:
 
         scoutNode = agentPos
 
-        if scoutNode == predPos:
+        scoutCondition=self.scoutForPredator(scoutNode,predPos)
+
+        if scoutCondition:
             nextTimeStepBeliefArrayPred[scoutNode] = 1
         else:
             nextTimeStepBeliefArrayPred[scoutNode] = 0
@@ -237,9 +240,9 @@ class Agent7:
             for intelligent_choice in minimumDistanceList:
                 nextTimeStepBeliefArrayPred2[intelligent_choice] += intelligentbeliefarrayPred[i]/(len(minimumDistanceList))
             neighbours = Utility.getNeighbours(graph, i)
-            neighbours.append(i)
+            # neighbours.append(i)
             for neighbor in neighbours:
-                nextTimeStepBeliefArrayPred2[i] += randombeliefarrayPred[neighbor] / (degree[neighbor] + 1)
+                nextTimeStepBeliefArrayPred2[i] += randombeliefarrayPred[neighbor] / (degree[neighbor])
         self.beliefArrayPred = copy(nextTimeStepBeliefArrayPred2)
         self.updateBeliefArrayPred(agentPos, preyPos, predPos, graph, dist, degree)
 
