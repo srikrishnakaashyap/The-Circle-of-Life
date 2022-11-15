@@ -211,7 +211,7 @@ class Agent4:
             predictedPreyPosition = self.predictPreyPos()
 
             nextTimeStepBeliefArray = self.nextbeliefArray(
-                self.beliefArray, graph, degree, preyPos
+                self.beliefArray, graph, degree, predictedPreyPosition
             )
 
             nextPreyPositions = []
