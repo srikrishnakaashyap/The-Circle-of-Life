@@ -80,7 +80,13 @@ class Agent2:
                 beliefArray, graph, degree, preyPos
             )
 
-            neighbourHeuristicMap = {}
+            # nextTimeStepBeliefArray = self.nextbeliefArray(
+            #     nextTimeStepBeliefArray, graph, degree, preyPos
+            # )
+
+            # nextTimeStepBeliefArray = self.nextbeliefArray(
+            #     nextTimeStepBeliefArray, graph, degree, preyPos
+            # )
 
             nextPreyPositions = []
             for i, j in enumerate(nextTimeStepBeliefArray):
