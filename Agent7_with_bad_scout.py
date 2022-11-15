@@ -207,10 +207,13 @@ class Agent7:
         if scoutCondition:
             nextTimeStepBeliefArrayPred[scoutNode] = 1
         else:
-            nextTimeStepBeliefArrayPred[scoutNode] = 0
-            for i in range(len(nextTimeStepBeliefArrayPred)):
-                if(i!=scoutNode):
-                    nextTimeStepBeliefArrayPred[i] = self.beliefArrayPred[i] / (1 - self.beliefArrayPred[scoutNode])
+            if(self.beliefArrayPred[scoutNode]==1):
+                nextTimeStepBeliefArrayPred = copy(self.beliefArrayPred)
+            else:
+                nextTimeStepBeliefArrayPred[scoutNode] = 0
+                for i in range(len(nextTimeStepBeliefArrayPred)):
+                    if(i!=scoutNode):
+                        nextTimeStepBeliefArrayPred[i] = self.beliefArrayPred[i] / (1 - self.beliefArrayPred[scoutNode])
 
             # print("sum before distributing: ", sum(nextTimeStepBeliefArray))
         self.beliefArrayPred = copy(nextTimeStepBeliefArrayPred)
