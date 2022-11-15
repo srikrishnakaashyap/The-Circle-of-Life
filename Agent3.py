@@ -48,7 +48,7 @@ class Agent3:
 
         # print("sum after distributing: ", sum(nextTimeStepBeliefArray2))
         self.beliefArray = copy(nextTimeStepBeliefArray2)
-        self.updateBeliefArray(agentPos, preyPos, predPos, graph, dist, degree)
+        # self.updateBeliefArray(agentPos, preyPos, predPos, graph, dist, degree)
         # print("sum after distributing: ", sum(nextTimeStepBeliefArray2))
 
     def predictPreyPos(self):
@@ -151,7 +151,6 @@ class Agent3:
             runs=100,
             visualize=False,
     ):
-        self.updateBeliefArray(agentPos, preyPos, predPos, graph, dist, degree)
         # print(self.beliefArray,"test init")
         while runs > 0:
 
@@ -166,6 +165,7 @@ class Agent3:
 
             if agentPos == preyPos:
                 return True, 0, 100 - runs, agentPos, predPos, preyPos
+            self.updateBeliefArray(agentPos, preyPos, predPos, graph, dist, degree)
             scoutnode=self.findNodeToScout()
             self.updateBeliefArray(scoutnode, preyPos, predPos, graph, dist, degree)
             # print(self.beliefArray,"after scout")
@@ -212,7 +212,7 @@ class Agent3:
         counter = 0
 
         stepsCount = 0
-        for _ in range(100):
+        for _ in range(30):
 
             agentPos = random.randint(0, size - 1)
             preyPos = random.randint(0, size - 1)
@@ -235,7 +235,7 @@ if __name__ == "__main__":
     agent3 = Agent3()
     counter = 0
     stepsArray = []
-    for _ in range(30):
+    for _ in range(100):
         result, steps = agent3.executeAgent(50)
         counter += result
         stepsArray.append(steps)
