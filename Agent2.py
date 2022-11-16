@@ -10,17 +10,17 @@ class Agent2:
 
     def nextbeliefArray(self, beliefArray, graph, degree, preyPos):
         # def perculateBeliefArray(self, graph, degree):
-        nextTimeStepBeliefArray = [0 for i in range(len(beliefArray))]
+        nextTimeStepBeliefArray2 = [0 for i in range(len(beliefArray))]
+        for i in range(len(beliefArray)):
+            neighbours = Utility.getNeighbours(graph, i)
+            neighbours.append(i)
+            for neighbor in neighbours:
+                nextTimeStepBeliefArray2[i] += beliefArray[neighbor] / (
+                    degree[neighbor] + 1
+                )
 
-        neighbours = Utility.getNeighbours(graph, preyPos)
-        # neighbours.append(preyPos)
-
-        for n in neighbours:
-            nextTimeStepBeliefArray[n] += beliefArray[preyPos] / (degree[preyPos] + 1)
-
-        nextTimeStepBeliefArray[preyPos] += beliefArray[preyPos] / (degree[preyPos] + 1)
-
-        return nextTimeStepBeliefArray
+        # print("sum after distributing: ", sum(nextTimeStepBelief
+        return nextTimeStepBeliefArray2
 
     def calculateHeuristic(
         self, agentPos, preyPos, predPos, nextPreyPositions, dist, beliefArray, graph
@@ -33,11 +33,13 @@ class Agent2:
             currheuristic = 0
             for i in nextPreyPositions:
 
-                neighbourPredDsitance = dist[n][predPos]
+                neighbourPredDsitance = dist[n][predPos] + 1
 
                 deno = (neighbourPredDsitance + 0.1) ** 10
 
-                currheuristic += (dist[n][i] * (1 - beliefArray[i])) / deno
+                currheuristic += (
+                    dist[n][i] * (1 - beliefArray[i])
+                ) / neighbourPredDsitance
 
             heuristics[n] = currheuristic
 
@@ -80,9 +82,13 @@ class Agent2:
                 beliefArray, graph, degree, preyPos
             )
 
+            # nextTimeStepBeliefArray = beliefArray
+
             # nextTimeStepBeliefArray = self.nextbeliefArray(
             #     nextTimeStepBeliefArray, graph, degree, preyPos
             # )
+
+            print(nextTimeStepBeliefArray, sum(nextTimeStepBeliefArray))
 
             # nextTimeStepBeliefArray = self.nextbeliefArray(
             #     nextTimeStepBeliefArray, graph, degree, preyPos

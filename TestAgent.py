@@ -4,7 +4,7 @@ from UtilityFunctions import Utility
 import time
 
 
-class Agent1:
+class TestAgent:
     def __init__(self):
         self.generateGraph = GenerateGraph()
 
@@ -132,14 +132,14 @@ class Agent1:
         counter = 0
 
         stepsCount = 0
-        for _ in range(100):
+        for _ in range(1):
 
             agentPos = random.randint(0, size - 1)
             preyPos = random.randint(0, size - 1)
             predPos = random.randint(0, size - 1)
 
             result, line, steps, agentPos, predPos, preyPos = self.agent1(
-                graph, path, dist, agentPos, preyPos, predPos, 100, False
+                graph, path, dist, agentPos, preyPos, predPos, 100, True
             )
 
             print(result, agentPos, predPos, preyPos)
@@ -153,12 +153,12 @@ class Agent1:
 
 if __name__ == "__main__":
 
-    agent1 = Agent1()
+    testAgent = TestAgent()
     counter = 0
     stepsArray = []
-    for _ in range(30):
+    for _ in range(1):
 
-        result, steps = agent1.executeAgent(50)
+        result, steps = testAgent.executeAgent(50)
         counter += result
         stepsArray.append(steps)
-    print(counter / 30, stepsArray)
+    # print(counter/30, stepsArray)
