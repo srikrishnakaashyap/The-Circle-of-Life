@@ -65,6 +65,7 @@ class Utility:
         move_list=[0,1]
         strategy_for_move=random.choices(move_list,weights=(40,60),k=1)
         if(strategy_for_move[0]):
+            # print("intelligent move")
             neighbours = Utility.getNeighbours(graph, predPos)
             neighbourDistanceMap = defaultdict(list)
 
@@ -72,10 +73,11 @@ class Utility:
                 neighbourDistanceMap[dist[n][agentPos]].append(n)
 
             minimumDistanceList = neighbourDistanceMap.get(min(neighbourDistanceMap), [])
-            print(minimumDistanceList, "test")
+            # print(minimumDistanceList, "test")
             return random.choice(minimumDistanceList)
         else:
-            moves = [predPos]
+            # print("dumb_move")
+            moves = []
             for i in range(len(graph[predPos])):
                 if graph[predPos][i] == 1:
                     moves.append(i)
