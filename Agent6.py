@@ -6,7 +6,7 @@ import random
 from UtilityFunctions import Utility
 
 
-class Agent5:
+class Agent6:
     def __init__(self):
         self.generateGraph = GenerateGraph()
 
@@ -96,18 +96,14 @@ class Agent5:
             currheuristic = 0
             for i in predatorNeighbours:
 
-                neighbourPredDsitance = dist[n][i] + 1
-
-                deno = (neighbourPredDsitance + 0.1) ** 10
-
-                currheuristic += dist[n][i] * (1 - beliefArray[i])
+                currheuristic += (dist[n][i]*2-dist[preyPos][n]) * (1 - beliefArray[i])
 
             heuristics[n] = -currheuristic/len(predatorNeighbours)
 
         return heuristics
 
 
-    def agent5(
+    def agent6(
             self,
             graph,
             path,
@@ -268,7 +264,7 @@ class Agent5:
 
             self.beliefArray = [0 for i in range(size)]
             self.beliefArray[predPos] = 1
-            result, line, steps, agentPos, predPos, preyPos = self.agent5(
+            result, line, steps, agentPos, predPos, preyPos = self.agent6(
                 graph, path, dist, agentPos, preyPos, predPos, degree, 100, False
             )
 
@@ -281,12 +277,12 @@ class Agent5:
 
 if __name__ == "__main__":
 
-    agent5 = Agent5()
+    agent6 = Agent6()
     counter = 0
     stepsArray = []
     for _ in range(30):
 
-        result, steps = agent5.executeAgent(50)
+        result, steps = agent6.executeAgent(50)
         counter += result
         stepsArray.append(steps)
     print(counter/30, stepsArray)
