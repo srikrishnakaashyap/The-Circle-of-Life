@@ -6,81 +6,11 @@ import random
 from UtilityFunctions import Utility
 
 
-class Agent7:
+class Agent8:
     def __init__(self):
         self.generateGraph = GenerateGraph()
 
-    # def moveAgent(self, agentPos, preyPos, predPos, graph, dist):
-    #
-    #     agentNeighbours = Utility.getNeighbours(graph, agentPos)
-    #
-    #     neighboursPreyDistance = []
-    #     neighboursPredatorDistance = []
-    #
-    #     currPreyDist = dist[agentPos][preyPos]
-    #     currPredDist = dist[agentPos][predPos]
-    #
-    #     for index, elem in enumerate(agentNeighbours):
-    #         neighboursPreyDistance.append(dist[elem][preyPos])
-    #         neighboursPredatorDistance.append(dist[elem][predPos])
-    #
-    #     options = []
-    #     for i in range(len(neighboursPredatorDistance)):
-    #         if (
-    #             neighboursPreyDistance[i] < currPreyDist
-    #             and neighboursPredatorDistance[i] > currPredDist
-    #         ):
-    #             options.append(agentNeighbours[i])
-    #
-    #     # Break ties by choosing optimal choice for agent 2
-    #     if len(options) > 0:
-    #         return random.choice(options)
-    #
-    #     for i in range(len(neighboursPredatorDistance)):
-    #         if (
-    #             neighboursPreyDistance[i] < currPreyDist
-    #             and neighboursPredatorDistance[i] == currPredDist
-    #         ):
-    #             options.append(agentNeighbours[i])
-    #
-    #     if len(options) > 0:
-    #         return random.choice(options)
-    #
-    #     for i in range(len(neighboursPredatorDistance)):
-    #         if (
-    #             neighboursPreyDistance[i] == currPreyDist
-    #             and neighboursPredatorDistance[i] > currPredDist
-    #         ):
-    #             options.append(agentNeighbours[i])
-    #
-    #     if len(options) > 0:
-    #         return random.choice(options)
-    #
-    #     for i in range(len(neighboursPredatorDistance)):
-    #         if (
-    #             neighboursPreyDistance[i] == currPreyDist
-    #             and neighboursPredatorDistance[i] == currPredDist
-    #         ):
-    #             options.append(agentNeighbours[i])
-    #
-    #     if len(options) > 0:
-    #         return random.choice(options)
-    #
-    #     for i in range(len(neighboursPredatorDistance)):
-    #         if neighboursPredatorDistance[i] > currPredDist:
-    #             options.append(agentNeighbours[i])
-    #
-    #     if len(options) > 0:
-    #         return random.choice(options)
-    #
-    #     for i in range(len(neighboursPredatorDistance)):
-    #         if neighboursPredatorDistance[i] == currPredDist:
-    #             options.append(agentNeighbours[i])
-    #
-    #     if len(options) > 0:
-    #         return random.choice(options)
-    #
-    #     return agentPos
+
     def calculateHeuristic(
         self, agentPos, nextPreyPosition, nextPredPosition, dist, beliefArrayPred, beliefArrayPrey, graph
     ):
@@ -109,7 +39,7 @@ class Agent7:
 
         return heuristics
 
-    def agent7(
+    def agent8(
             self,
             graph,
             path,
@@ -134,28 +64,19 @@ class Agent7:
 
             if agentPos == preyPos:
                 return True, 0, 100 - runs, agentPos, predPos, preyPos
-            # print(self.beliefArrayPred,"input belief of predator")
-            # print(self.beliefArrayPrey, "input belief of prey")
+
             if (self.beliefArrayPred.count(0)!=49):
                 scoutnode=self.findNodeToScoutPred(agentPos,dist)
-                # print("test1")
+
             else:
                 scoutnode=self.findNodeToScoutPrey()
-                # print("test2")
-            # print(self.beliefArrayPred, sum(self.beliefArrayPred), "belief before scout")
+
             self.updateBeliefArrayPred(scoutnode, preyPos, predPos, graph, dist, degree)
             self.updateBeliefArrayPrey(scoutnode, preyPos, predPos, graph, dist, degree)
-            # print(self.beliefArrayPred,"after scout of predator")
-            # print(self.beliefArrayPrey, "after scout of prey")
+
             predictedPredPosition = self.predictPredPos(agentPos,dist)
             predictedPreyPosition = self.predictPreyPos()
-            # move agent
-            # print(self.beliefArrayPred,sum(self.beliefArrayPred), "belief before input")
 
-
-
-
-            # agentPos = self.moveAgent(agentPos, predictedPreyPosition, predictedPredPosition, graph, dist)
 
             heuristicMap = self.calculateHeuristic(
                 agentPos,
@@ -166,15 +87,14 @@ class Agent7:
                 self.beliefArrayPrey,
                 graph,
             )
-
+            #move agent
             agentPos = sorted(heuristicMap.items(), key=lambda x: x[1])[0][0]
 
 
             self.NormalizeBeliefArrayPred(agentPos, preyPos, predPos, graph, dist, degree)
             self.NormalizeBeliefArrayPrey(agentPos, preyPos, predPos, graph, dist, degree)
             print(agentPos, preyPos, predPos, predictedPredPosition,sum(self.beliefArrayPred))
-            # print(self.beliefArrayPred,sum(self.beliefArrayPred),"predbelief")
-            # check pred
+            
             if agentPos == predPos:
                 return False, 4, 100 - runs, agentPos, predPos, preyPos
 
@@ -189,7 +109,6 @@ class Agent7:
                 return True, 2, 100 - runs, agentPos, predPos, preyPos
 
             # move predator
-            # predPos = Utility.movePredator(agentPos, predPos, path)
             predPos = Utility.movePredator_dum(agentPos, predPos, graph, dist)
 
             runs -= 1
@@ -239,7 +158,6 @@ class Agent7:
                 if(i!=scoutNode):
                     nextTimeStepBeliefArrayPrey[i] = self.beliefArrayPrey[i] / (1 - self.beliefArrayPrey[scoutNode])
 
-            # print("sum before distributing: ", sum(nextTimeStepBeliefArray))
         self.beliefArrayPrey = copy(nextTimeStepBeliefArrayPrey)
 
 
@@ -258,7 +176,6 @@ class Agent7:
                 if(i!=scoutNode):
                     nextTimeStepBeliefArrayPrey[i] = self.beliefArrayPrey[i] / (1 - (0.9*self.beliefArrayPrey[scoutNode]))
 
-            # print("sum before distributing: ", sum(nextTimeStepBeliefArray))
         self.beliefArrayPrey = copy(nextTimeStepBeliefArrayPrey)
 
     def updateBeliefArrayPred(self, agentPos, preyPos, predPos, graph, dist, degree):
@@ -280,7 +197,6 @@ class Agent7:
                     if(i!=scoutNode):
                         nextTimeStepBeliefArrayPred[i] = self.beliefArrayPred[i] / (1 - (0.9*self.beliefArrayPred[scoutNode]))
 
-            # print("sum before distributing: ", sum(nextTimeStepBeliefArray))
         self.beliefArrayPred = copy(nextTimeStepBeliefArrayPred)
 
     def updateBeliefArrayPred_agent(self, agentPos, preyPos, predPos, graph, dist, degree):
@@ -388,7 +304,7 @@ class Agent7:
             self.beliefArrayPred = [0 for i in range(size)]
             self.beliefArrayPred[predPos] = 1
             self.beliefArrayPrey = [1 / (size) for i in range(size)]
-            result, line, steps, agentPos, predPos, preyPos = self.agent7(
+            result, line, steps, agentPos, predPos, preyPos = self.agent8(
                 graph, path, dist, agentPos, preyPos, predPos, degree, 100, False
             )
 
@@ -401,12 +317,12 @@ class Agent7:
 
 if __name__ == "__main__":
 
-    agent7 = Agent7()
+    agent8 = Agent8()
     counter = 0
     stepsArray = []
     for _ in range(30):
 
-        result, steps = agent7.executeAgent(50)
+        result, steps = agent8.executeAgent(50)
         counter += result
         stepsArray.append(steps)
     print(counter/30, stepsArray)
