@@ -39,9 +39,8 @@ class Agent4:
 
                 deno = (neighbourPredDsitance + 0.1) ** 10
 
-                currheuristic += (
-                    dist[n][i] * (1 - beliefArray[i])
-                ) / neighbourPredDsitance
+                currheuristic += dist[n][i] * (1 - beliefArray[i])
+                # ) / neighbourPredDsitance
 
             heuristics[n] = currheuristic
 
@@ -97,6 +96,17 @@ class Agent4:
         maxiValue = max(self.beliefArray)
 
         for i, j in enumerate(self.beliefArray):
+            if j == maxiValue:
+                options.append(i)
+
+        if len(options) > 0:
+            return random.choice(options)
+
+    def predictPosForBeliefArray(self, beliefArray):
+        options = []
+        maxiValue = max(beliefArray)
+
+        for i, j in enumerate(beliefArray):
             if j == maxiValue:
                 options.append(i)
 
@@ -216,35 +226,40 @@ class Agent4:
                 self.beliefArray, graph, degree, predictedPreyPosition
             )
 
-            print("SUM", sum(nextTimeStepBeliefArray))
-
-            nextPreyPositions = []
-            for i, j in enumerate(nextTimeStepBeliefArray):
-                if j != 0:
-                    nextPreyPositions.append(i)
-
-            heuristicMap = self.calculateHeuristic(
-                agentPos,
-                preyPos,
-                predPos,
-                nextPreyPositions,
-                dist,
-                nextTimeStepBeliefArray,
-                graph,
+            nextTimeStepPredictedPrey = self.predictPosForBeliefArray(
+                nextTimeStepBeliefArray
             )
 
-            # move agent
-            agentPos = sorted(heuristicMap.items(), key=lambda x: x[1])[0][0]
+            # print("SUM", sum(nextTimeStepBeliefArray))
 
-            # agentPos = self.moveAgent(
+            # nextPreyPositions = []
+            # for i, j in enumerate(nextTimeStepBeliefArray):
+            #     if j != 0:
+            #         nextPreyPositions.append(i)
+
+            # heuristicMap = self.calculateHeuristic(
             #     agentPos,
-            #     predictedPreyPosition,
             #     preyPos,
             #     predPos,
-            #     graph,
+            #     nextPreyPositions,
             #     dist,
-            #     degree,
+            #     nextTimeStepBeliefArray,
+            #     graph,
             # )
+
+            # # move agent
+            # agentPos = sorted(heuristicMap.items(), key=lambda x: x[1])[0][0]
+
+            agentPos = self.moveAgent(
+                agentPos,
+                nextTimeStepPredictedPrey,
+                preyPos,
+                predPos,
+                graph,
+                dist,
+                degree,
+            )
+
             self.NormalizeBeliefArray(agentPos, preyPos, predPos, graph, dist, degree)
             print(
                 agentPos, preyPos, predPos, predictedPreyPosition, sum(self.beliefArray)

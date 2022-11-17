@@ -26,6 +26,7 @@ class Agent2:
         self, agentPos, preyPos, predPos, nextPreyPositions, dist, beliefArray, graph
     ):
         agentNeighbours = Utility().getNeighbours(graph, agentPos)
+        agentNeighbours.append(agentPos)
 
         heuristics = {}
         for n in agentNeighbours:
@@ -38,8 +39,8 @@ class Agent2:
                 deno = (neighbourPredDsitance + 0.1) ** 10
 
                 currheuristic += (
-                    dist[n][i] * (1 - beliefArray[i])
-                ) / neighbourPredDsitance
+                    dist[n][i] * (1 - beliefArray[i]) / neighbourPredDsitance
+                )
 
             heuristics[n] = currheuristic
 

@@ -10,6 +10,63 @@ class Agent6:
     def __init__(self):
         self.generateGraph = GenerateGraph()
 
+    def nextbeliefArray(self, beliefArray, graph, degree, preyPos):
+        # def perculateBeliefArray(self, graph, degree):
+        nextTimeStepBeliefArray2 = [0 for i in range(len(self.beliefArray))]
+        for i in range(len(self.beliefArray)):
+            neighbours = Utility.getNeighbours(graph, i)
+            neighbours.append(i)
+            for neighbor in neighbours:
+                nextTimeStepBeliefArray2[i] += self.beliefArray[neighbor] / (
+                    degree[neighbor] + 1
+                )
+
+        # print("sum after distributing: ", sum(nextTimeStepBelief
+        return nextTimeStepBeliefArray2
+
+    def predictPosForBeliefArray(self, beliefArray):
+        options = []
+        maxiValue = max(beliefArray)
+
+        for i, j in enumerate(beliefArray):
+            if j == maxiValue:
+                options.append(i)
+
+        if len(options) > 0:
+            return random.choice(options)
+
+    def calculateHeuristic(
+        self,
+        agentPos,
+        preyPos,
+        predPos,
+        nextPreyPositions,
+        dist,
+        preyBeliefArray,
+        predBeliefArray,
+        graph,
+    ):
+        agentNeighbours = Utility().getNeighbours(graph, agentPos)
+        agentNeighbours.append(agentPos)
+
+        heuristics = {}
+        for n in agentNeighbours:
+
+            currheuristic = 0
+            for i in nextPreyPositions:
+
+                neighbourPredDsitance = dist[n][predPos] + 1
+
+                deno = (neighbourPredDsitance + 0.1) ** 10
+
+                currheuristic += (
+                    dist[n][i] * (1 - preyBeliefArray[i]) / neighbourPredDsitance
+                )
+
+            heuristics[n] = currheuristic
+
+        return heuristics
+
     def moveAgent(self, agentPos, preyPos, predPos, graph, dist):
 
         agentNeighbours = Utility.getNeighbours(graph, agentPos)
@@ -82,7 +139,7 @@ class Agent6:
 
         return agentPos
 
-    def agent5(
+    def agent6(
         self,
         graph,
         path,
@@ -112,9 +169,51 @@ class Agent6:
             # print(self.beliefArray,"after scout")
             predictedPredPosition = self.predictPredPos(agentPos, dist)
             # move agent
-            agentPos = self.moveAgent(
-                agentPos, preyPos, predictedPredPosition, graph, dist
+
+            preyBeliefArray = [0 for i in range(len(graph))]
+
+            preyBeliefArray[preyPos] = 1
+
+            nextTimeStepPreyBeliefArray = self.nextbeliefArray(
+                preyBeliefArray, graph, degree, preyPos
             )
+
+            # print("SUM", sum(nextTimeStepBeliefArray))
+
+            nextPreyPositions = []
+            for i, j in enumerate(nextTimeStepPreyBeliefArray):
+                if j != 0:
+                    nextPreyPositions.append(i)
+
+            nextTimeStepPredBeliefArray = self.nextbeliefArray(
+                self.beliefArray, graph, degree, preyPos
+            )
+
+            nextPredPositions = []
+
+            for i, j in enumerate(nextTimeStepPredBeliefArray):
+                if j != 0:
+                    nextPredPositions.append(i)
+
+            heuristicMap = self.calculateHeuristic(
+                agentPos,
+                preyPos,
+                predictedPredPosition,
+                nextPreyPositions,
+                nextPredPositions,
+                dist,
+                nextTimeStepPreyBeliefArray,
+                nextTimeStepPredBeliefArray,
+                graph,
+            )
+
+            # # move agent
+            agentPos = sorted(heuristicMap.items(), key=lambda x: x[1])[0][0]
+
+            # agentPos = self.moveAgent(
+            #     agentPos, preyPos, predictedPredPosition, graph, dist
+            # )
+
             self.NormalizeBeliefArray(agentPos, preyPos, predPos, graph, dist, degree)
             print(
                 agentPos, preyPos, predPos, predictedPredPosition, sum(self.beliefArray)
@@ -241,7 +340,7 @@ class Agent6:
 
             self.beliefArray = [0 for i in range(size)]
             self.beliefArray[predPos] = 1
-            result, line, steps, agentPos, predPos, preyPos = self.agent5(
+            result, line, steps, agentPos, predPos, preyPos = self.agent6(
                 graph, path, dist, agentPos, preyPos, predPos, degree, 100, False
             )
 
