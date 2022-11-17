@@ -64,20 +64,19 @@ class Agent8:
 
             if agentPos == preyPos:
                 return True, 0, 100 - runs, agentPos, predPos, preyPos
-            # print(self.beliefArrayPred,"input belief of predator")
-            # print(self.beliefArrayPrey, "input belief of prey")
+
             if (self.beliefArrayPred.count(0)!=49):
                 scoutnode=self.findNodeToScoutPred(agentPos,dist)
-                # print("test1")
+
             else:
                 scoutnode=self.findNodeToScoutPrey()
-                # print("test2")
+
             self.updateBeliefArrayPred(scoutnode, preyPos, predPos, graph, dist, degree)
             self.updateBeliefArrayPrey(scoutnode, preyPos, predPos, graph, dist, degree)
-            # print(self.beliefArrayPred,"after scout of predator")
-            # print(self.beliefArrayPrey, "after scout of prey")
+
             predictedPredPosition = self.predictPredPos(agentPos,dist)
             predictedPreyPosition = self.predictPreyPos()
+            
             # move agent
             heuristicMap = self.calculateHeuristic(
                 agentPos,
@@ -90,12 +89,6 @@ class Agent8:
             )
 
             agentPos = sorted(heuristicMap.items(), key=lambda x: x[1])[0][0]
-
-
-            # agentPos = self.moveAgent(agentPos, predictedPreyPosition, predictedPredPosition, graph, dist)
-
-
-
 
             self.NormalizeBeliefArrayPred(agentPos, preyPos, predPos, graph, dist, degree)
             self.NormalizeBeliefArrayPrey(agentPos, preyPos, predPos, graph, dist, degree)
@@ -115,7 +108,6 @@ class Agent8:
                 return True, 2, 100 - runs, agentPos, predPos, preyPos
 
             # move predator
-            # predPos = Utility.movePredator(agentPos, predPos, path)
             predPos = Utility.movePredator_dum(agentPos, predPos, graph, dist)
 
             runs -= 1
@@ -167,7 +159,6 @@ class Agent8:
                 if(i!=scoutNode):
                     nextTimeStepBeliefArrayPrey[i] = self.beliefArrayPrey[i] / (1 - self.beliefArrayPrey[scoutNode])
 
-            # print("sum before distributing: ", sum(nextTimeStepBeliefArray))
         self.beliefArrayPrey = copy(nextTimeStepBeliefArrayPrey)
 
     def updateBeliefArrayPred(self, agentPos, preyPos, predPos, graph, dist, degree):
@@ -189,7 +180,6 @@ class Agent8:
                     if(i!=scoutNode):
                         nextTimeStepBeliefArrayPred[i] = self.beliefArrayPred[i] / (1 - self.beliefArrayPred[scoutNode])
 
-            # print("sum before distributing: ", sum(nextTimeStepBeliefArray))
         self.beliefArrayPred = copy(nextTimeStepBeliefArrayPred)
 
     def NormalizeBeliefArrayPrey(self, agentPos, preyPos, predPos, graph, dist, degree):
@@ -200,7 +190,6 @@ class Agent8:
             for neighbor in neighbours:
                 nextTimeStepBeliefArrayPrey2[i] += self.beliefArrayPrey[neighbor] / (degree[neighbor] + 1)
 
-        # print("sum after distributing: ", sum(nextTimeStepBeliefArray2))
         self.beliefArrayPrey = copy(nextTimeStepBeliefArrayPrey2)
         self.updateBeliefArrayPrey(agentPos, preyPos, predPos, graph, dist, degree)
 
