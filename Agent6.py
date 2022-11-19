@@ -88,7 +88,7 @@ class Agent6:
         agentNeighbours = Utility().getNeighbours(graph, agentPos)
         agentNeighbours.append(agentPos)
 
-        predatorNeighbours= Utility().getNeighbours(graph, nextPredPosition)
+        predatorNeighbours = Utility().getNeighbours(graph, nextPredPosition)
 
         heuristics = {}
         for n in agentNeighbours:
@@ -96,26 +96,29 @@ class Agent6:
             currheuristic = 0
             for i in predatorNeighbours:
 
-                currheuristic += (dist[n][i]*2-dist[preyPos][n]) * (1 - beliefArray[i])
+                currheuristic += (dist[n][i] * 2 - dist[preyPos][n]) * (
+                    1 - beliefArray[i]
+                )
 
-            heuristics[n] = -currheuristic/len(predatorNeighbours)
+            heuristics[n] = -currheuristic / len(predatorNeighbours)
 
         return heuristics
 
-
     def agent6(
-            self,
-            graph,
-            path,
-            dist,
-            agentPos,
-            preyPos,
-            predPos,
-            degree,
-            runs=100,
-            visualize=False,
+        self,
+        graph,
+        path,
+        dist,
+        agentPos,
+        preyPos,
+        predPos,
+        degree,
+        runs=100,
+        visualize=False,
     ):
         # self.updateBeliefArray(agentPos, preyPos, predPos, graph, dist, degree)
+
+        self.numberOfSuccessfulScouts = 0
         while runs > 0:
             if visualize:
                 # wait for a second
@@ -128,10 +131,10 @@ class Agent6:
                 return True, 0, 100 - runs, agentPos, predPos, preyPos
             self.updateBeliefArray(agentPos, preyPos, predPos, graph, dist, degree)
             # print(self.beliefArray,"input belief")
-            scoutnode=self.findNodeToScout(agentPos,dist)
+            scoutnode = self.findNodeToScout(agentPos, dist)
             self.updateBeliefArray(scoutnode, preyPos, predPos, graph, dist, degree)
             # print(self.beliefArray,"after scout")
-            predictedPredPosition = self.predictPredPos(agentPos,dist)
+            predictedPredPosition = self.predictPredPos(agentPos, dist)
             # self.NormalizeBeliefArray(agentPos, preyPos, predictedPredPosition, graph, dist, degree)
             # predictedPredPosition = self.predictPredPos(agentPos, dist)
             heuristicMap = self.calculateHeuristic(
@@ -143,16 +146,14 @@ class Agent6:
                 graph,
             )
 
-
             # move agent
             # agentPos = self.moveAgent(agentPos, preyPos, predictedPredPosition, graph, dist)
             agentPos = sorted(heuristicMap.items(), key=lambda x: x[1])[0][0]
 
-
-
-
             self.NormalizeBeliefArray(agentPos, preyPos, predPos, graph, dist, degree)
-            print(agentPos, preyPos, predPos, predictedPredPosition, sum(self.beliefArray))
+            print(
+                agentPos, preyPos, predPos, predictedPredPosition, sum(self.beliefArray)
+            )
             # check pred
             if agentPos == predPos:
                 return False, 4, 100 - runs, agentPos, predPos, preyPos
@@ -175,20 +176,20 @@ class Agent6:
 
         return False, 5, 100, agentPos, predPos, preyPos
 
-    def findNodeToScout(self,agentPos,dist):
+    def findNodeToScout(self, agentPos, dist):
         options = []
         maxiValue = max(self.beliefArray)
 
         for i, j in enumerate(self.beliefArray):
             if j == maxiValue:
                 options.append(i)
-        options_same_probabilty=[]
-        mini=999999
+        options_same_probabilty = []
+        mini = 999999
         for c in options:
-            if(dist[agentPos][c]<mini):
-                mini=dist[agentPos][c]
+            if dist[agentPos][c] < mini:
+                mini = dist[agentPos][c]
         for c in options:
-            if(dist[agentPos][c]==mini):
+            if dist[agentPos][c] == mini:
                 options_same_probabilty.append(c)
         if len(options_same_probabilty) > 0:
             return random.choice(options_same_probabilty)
@@ -200,49 +201,61 @@ class Agent6:
         scoutNode = agentPos
 
         if scoutNode == predPos:
+            self.numberOfSuccessfulScouts += 1
             nextTimeStepBeliefArray[scoutNode] = 1
         else:
             nextTimeStepBeliefArray[scoutNode] = 0
             for i in range(len(nextTimeStepBeliefArray)):
-                if(i!=scoutNode):
-                    nextTimeStepBeliefArray[i] = self.beliefArray[i] / (1 - self.beliefArray[scoutNode])
+                if i != scoutNode:
+                    nextTimeStepBeliefArray[i] = self.beliefArray[i] / (
+                        1 - self.beliefArray[scoutNode]
+                    )
 
             # print("sum before distributing: ", sum(nextTimeStepBeliefArray))
         self.beliefArray = copy(nextTimeStepBeliefArray)
 
     def NormalizeBeliefArray(self, agentPos, preyPos, predPos, graph, dist, degree):
         nextTimeStepBeliefArray2 = [0 for i in range(len(self.beliefArray))]
-        randombeliefarray=[0.4*self.beliefArray[i] for i in range(len(self.beliefArray))]
-        intelligentbeliefarray = [0.6 * self.beliefArray[i] for i in range(len(self.beliefArray))]
+        randombeliefarray = [
+            0.4 * self.beliefArray[i] for i in range(len(self.beliefArray))
+        ]
+        intelligentbeliefarray = [
+            0.6 * self.beliefArray[i] for i in range(len(self.beliefArray))
+        ]
         for i in range(len(self.beliefArray)):
             neighbours = Utility.getNeighbours(graph, i)
             neighbourDistanceMap = defaultdict(list)
             for n in neighbours:
                 neighbourDistanceMap[dist[n][agentPos]].append(n)
-            minimumDistanceList = neighbourDistanceMap.get(min(neighbourDistanceMap), [])
+            minimumDistanceList = neighbourDistanceMap.get(
+                min(neighbourDistanceMap), []
+            )
             for intelligent_choice in minimumDistanceList:
-                nextTimeStepBeliefArray2[intelligent_choice] += intelligentbeliefarray[i]/(len(minimumDistanceList))
+                nextTimeStepBeliefArray2[intelligent_choice] += intelligentbeliefarray[
+                    i
+                ] / (len(minimumDistanceList))
             neighbours = Utility.getNeighbours(graph, i)
             # neighbours.append(i)
             for neighbor in neighbours:
-                nextTimeStepBeliefArray2[i] += randombeliefarray[neighbor] / (degree[neighbor])
+                nextTimeStepBeliefArray2[i] += randombeliefarray[neighbor] / (
+                    degree[neighbor]
+                )
         self.beliefArray = copy(nextTimeStepBeliefArray2)
 
-
-    def predictPredPos(self,agentPos,dist):
+    def predictPredPos(self, agentPos, dist):
         options = []
         maxiValue = max(self.beliefArray)
 
         for i, j in enumerate(self.beliefArray):
             if j == maxiValue:
                 options.append(i)
-        options_same_probabilty=[]
-        mini=999999
+        options_same_probabilty = []
+        mini = 999999
         for c in options:
-            if(dist[agentPos][c]<mini):
-                mini=dist[agentPos][c]
+            if dist[agentPos][c] < mini:
+                mini = dist[agentPos][c]
         for c in options:
-            if(dist[agentPos][c]==mini):
+            if dist[agentPos][c] == mini:
                 options_same_probabilty.append(c)
         if len(options_same_probabilty) > 0:
             return random.choice(options_same_probabilty)
@@ -277,12 +290,23 @@ class Agent6:
 
 if __name__ == "__main__":
 
-    agent6 = Agent6()
+    agent1 = Agent6()
     counter = 0
     stepsArray = []
+    successArray = []
+    predCatch = []
+    successfulScouts = []
     for _ in range(30):
 
-        result, steps = agent6.executeAgent(50)
-        counter += result
+        result, steps = agent1.executeAgent(50)
+        successArray.append(result)
+        # counter += result
         stepsArray.append(steps)
-    print(counter/30, stepsArray)
+        # predCatch.append(catches)
+        successfulScouts.append(agent1.numberOfSuccessfulScouts)
+        # print(catches)
+
+    # print(predCatch)
+    print(successArray)
+    print(stepsArray)
+    print(successfulScouts)

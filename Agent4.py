@@ -39,9 +39,7 @@ class Agent4:
 
                 deno = (neighbourPredDsitance + 0.1) ** 10
 
-                currheuristic += (
-                    dist[n][i] * (1 - beliefArray[i])
-                ) / neighbourPredDsitance
+                currheuristic += (dist[n][i] * (1 - beliefArray[i])) / deno
 
             heuristics[n] = currheuristic
 
@@ -66,6 +64,7 @@ class Agent4:
 
         if scoutNode == preyPos:
             nextTimeStepBeliefArray[scoutNode] = 1
+            self.numberOfSuccessfulScouts += 1
         else:
             nextTimeStepBeliefArray[scoutNode] = 0
             for i in range(len(nextTimeStepBeliefArray)):
@@ -194,6 +193,8 @@ class Agent4:
     ):
         self.updateBeliefArray(agentPos, preyPos, predPos, graph, dist, degree)
         # print(self.beliefArray,"test init")
+
+        self.numberOfSuccessfulScouts = 0
         while runs > 0:
 
             if visualize:
@@ -299,11 +300,23 @@ class Agent4:
 
 if __name__ == "__main__":
 
-    agent4 = Agent4()
+    agent1 = Agent4()
     counter = 0
     stepsArray = []
+    successArray = []
+    predCatch = []
+    successfulScouts = []
     for _ in range(30):
-        result, steps = agent4.executeAgent(50)
-        counter += result
+
+        result, steps = agent1.executeAgent(50)
+        successArray.append(result)
+        # counter += result
         stepsArray.append(steps)
-    print("SUCCESS RATE", counter / 30, stepsArray)
+        # predCatch.append(catches)
+        successfulScouts.append(agent1.numberOfSuccessfulScouts)
+        # print(catches)
+
+    # print(predCatch)
+    print(successArray)
+    print(stepsArray)
+    print(successfulScouts)

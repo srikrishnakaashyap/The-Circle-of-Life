@@ -38,9 +38,7 @@ class Agent2:
 
                 deno = (neighbourPredDsitance + 0.1) ** 10
 
-                currheuristic += (
-                    dist[n][i] * (1 - beliefArray[i]) / neighbourPredDsitance
-                )
+                currheuristic += dist[n][i] * (1 - beliefArray[i]) / deno
 
             heuristics[n] = currheuristic
 
@@ -142,6 +140,9 @@ class Agent2:
         counter = 0
 
         stepsCount = 0
+
+        predCatch = 0
+
         for _ in range(100):
 
             agentPos = random.randint(0, size - 1)
@@ -155,10 +156,13 @@ class Agent2:
             print(result, agentPos, predPos, preyPos)
             counter += result
             stepsCount += steps
+
+            if not result:
+                predCatch += 1
         # print(self.agent1(graph, path, dist, agentPos, preyPos, predPos))
         # print(result, line)
 
-        return counter, stepsCount / 100
+        return counter, stepsCount / 100, predCatch
 
 
 if __name__ == "__main__":
@@ -166,9 +170,17 @@ if __name__ == "__main__":
     agent1 = Agent2()
     counter = 0
     stepsArray = []
+    successArray = []
+    predCatch = []
     for _ in range(30):
 
-        result, steps = agent1.executeAgent(50)
-        counter += result
+        result, steps, catches = agent1.executeAgent(50)
+        successArray.append(result)
+        # counter += result
         stepsArray.append(steps)
-    print(counter / 30, stepsArray)
+        predCatch.append(catches)
+        # print(catches)
+
+    # print(predCatch)
+    print(successArray)
+    print(stepsArray)

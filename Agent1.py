@@ -86,7 +86,7 @@ class Agent1:
 
         while runs > 0:
 
-            print(agentPos, predPos, preyPos)
+            # print(agentPos, predPos, preyPos)
 
             if visualize:
                 # wait for a second
@@ -132,6 +132,8 @@ class Agent1:
         counter = 0
 
         stepsCount = 0
+
+        predCatch = 0
         for _ in range(100):
 
             agentPos = random.randint(0, size - 1)
@@ -139,16 +141,19 @@ class Agent1:
             predPos = random.randint(0, size - 1)
 
             result, line, steps, agentPos, predPos, preyPos = self.agent1(
-                graph, path, dist, agentPos, preyPos, predPos, 100, False
+                graph, path, dist, agentPos, preyPos, predPos, 100, True
             )
 
-            print(result, agentPos, predPos, preyPos)
+            # print(result, agentPos, predPos, preyPos)
             counter += result
             stepsCount += steps
+
+            if not result:
+                predCatch += 1
         # print(self.agent1(graph, path, dist, agentPos, preyPos, predPos))
         # print(result, line)
 
-        return counter, stepsCount / 100
+        return counter, stepsCount / 100, predCatch
 
 
 if __name__ == "__main__":
@@ -156,9 +161,17 @@ if __name__ == "__main__":
     agent1 = Agent1()
     counter = 0
     stepsArray = []
+    successArray = []
+    predCatch = []
     for _ in range(30):
 
-        result, steps = agent1.executeAgent(50)
-        counter += result
+        result, steps, catches = agent1.executeAgent(50)
+        successArray.append(result)
+        # counter += result
         stepsArray.append(steps)
-    print(counter / 30, stepsArray)
+        predCatch.append(catches)
+        # print(catches)
+
+    print(predCatch)
+    print(successArray)
+    print(stepsArray)

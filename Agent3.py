@@ -28,6 +28,7 @@ class Agent3:
         scoutNode = agentPos
 
         if scoutNode == preyPos:
+            self.numberOfSuccessfulScouts += 1
             nextTimeStepBeliefArray[scoutNode] = 1
         else:
             nextTimeStepBeliefArray[scoutNode] = 0
@@ -156,6 +157,7 @@ class Agent3:
         visualize=False,
     ):
         # print(self.beliefArray,"test init")
+        self.numberOfSuccessfulScouts = 0
         while runs > 0:
 
             if visualize:
@@ -218,7 +220,7 @@ class Agent3:
         counter = 0
 
         stepsCount = 0
-        for _ in range(30):
+        for _ in range(100):
 
             agentPos = random.randint(0, size - 1)
             preyPos = random.randint(0, size - 1)
@@ -238,11 +240,23 @@ class Agent3:
 
 if __name__ == "__main__":
 
-    agent3 = Agent3()
+    agent1 = Agent3()
     counter = 0
     stepsArray = []
-    for _ in range(100):
-        result, steps = agent3.executeAgent(50)
-        counter += result
+    successArray = []
+    predCatch = []
+    successfulScouts = []
+    for _ in range(30):
+
+        result, steps = agent1.executeAgent(50)
+        successArray.append(result)
+        # counter += result
         stepsArray.append(steps)
-    print("SUCCESS RATE", counter / 30, stepsArray)
+        # predCatch.append(catches)
+        successfulScouts.append(agent1.numberOfSuccessfulScouts)
+        # print(catches)
+
+    # print(predCatch)
+    print(successArray)
+    print(stepsArray)
+    print(successfulScouts)
